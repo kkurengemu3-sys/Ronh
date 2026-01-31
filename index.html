@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クレーン受信 - レバー</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #2c3e50; color: white; }
+        .controller { display: grid; grid-template-areas: ". up ." "left . right" ". down ."; gap: 10px; justify-content: center; opacity: 0.5; }
+        .btn { width: 80px; height: 80px; font-size: 24px; border-radius: 15px; background: #333; color: #555; border: none; }
+        .push-btn { width: 150px; height: 150px; border-radius: 50%; background: #555; color: #777; border: 8px solid #444; font-size: 24px; margin-top: 30px; }
+        .active { background: #1abc9c !important; color: white !important; opacity: 1; }
+        .active-push { background: #ff4d8d !important; color: white !important; border-color: #ff0055 !important; transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div id="connect-ui">
+        <input type="text" id="host-code" maxlength="3" placeholder="3文字">
+        <button onclick="connect()">接続</button>
+    </div>
+
+    <div class="controller" style="margin-top:20px;">
+        <button id="up" class="btn">↑</button>
+        <button id="left" class="btn">←</button>
+        <button id="right" class="btn">→</button>
+        <button id="down" class="btn">↓</button>
+    </div>
+    <button id="action" class="push-btn">PUSH</button>
+
+    <script>
+        const peer = new Peer();
+        function connect() {
+            const code = document.getElementById('host-code').value;
+            const conn = peer.connect('crane-lever-' + code);
+            conn.on('data', (data) => {
+                const el = document.getElementById(data.id);
+                const activeClass = data.id === 'action' ? 'active-push' : 'active';
+                if (data.act === 'down') el.classList.add(activeClass);
+                else el.classList.remove(activeClass);
+            });
+        }
+    </script>
+</body>
+</html>
